@@ -9,6 +9,6 @@ string note, TransactionStatus status)
     this->type = type;
     this->note = note;
     this->status = status;
-    balance += amount;
+    balance += (status & 1) ? amount : 0.0;
     date = time(nullptr);
 }
