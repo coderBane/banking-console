@@ -3,15 +3,30 @@
 
 #include <list>
 #include <string>
+#include <iomanip>
 #include "utilities.hpp"
 #include "nlohmann/json.hpp"
+
 
 namespace bank{
 
     enum TransactionType { DEBIT, CREDIT, INTEREST, CHARGE };
 
     enum TransactionStatus { PENDING, COMPLETED, REJECTED };
-    
+
+    const char* const typStr[] = {
+        [DEBIT] = "DEBIT",
+        [CREDIT] = "CREDIT",
+        [INTEREST] = "INTEREST",
+        [CHARGE] = "CHARGE",
+    };
+
+    const char* const staStr[] = {
+        [PENDING] = "PENDING",
+        [COMPLETED] = "COMPLETED",
+        [REJECTED] = "REJECTED",
+    };
+
     struct Transaction
     {
         time_t date;
@@ -22,6 +37,7 @@ namespace bank{
 
         Transaction(double, TransactionType, double&, std::string note = "", TransactionStatus = COMPLETED);
     };
+
 
     //Base class for Accounts
     class Account
@@ -37,31 +53,37 @@ namespace bank{
             std::string fullname;
             friend double getBalance(Account);
             Account(std::string, std::string, double balance = 0.0);
-            void withdraw(double amount);
             void deposit(double amount);
+            virtual void withdraw(double amount);
             void transactionHistory() const;
             std::string accountInfo() const;
     };
 
+
+    class CurrentAccount : public Account
+    {
+        private:
+            const double charge = 10.0;
+        public:
+            CurrentAccount(std::string fname, std::string sname, double balance) : Account(fname, sname, balance){};
+            void withdraw(double amount);
+    };
+
+
+    class SavingsAccount : public Account
+    {
+        private:
+            const double charge = 2.0;
+            const double rate = 0.012;
+            static int count;
+        public:
+            SavingsAccount(std::string fname, std::string sname, double balance) : Account(fname, sname, balance){};
+            void withdraw(double amount);
+            void applyInterest();
+    };
+    
+
     double getBalance(Account account);
-    
-    // class bank
-    // {
-    // private:
-    //     /* data */
-    // public:
-    //     bank(/* args */);
-    //     ~bank();
-    // };
-    
-    // bank::bank(/* args */)
-    // {
-    // }
-    
-    // bank::~bank()
-    // {
-    // }
-    
 }
 
 #endif

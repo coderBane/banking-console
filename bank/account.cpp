@@ -2,6 +2,7 @@
 #include <iostream>
 #include <exception>
 
+
 using namespace std;
 using json = nlohmann::json;
 
@@ -41,12 +42,41 @@ string bank::Account::accountInfo() const
 
 void bank::Account::transactionHistory() const
 {
-    cout << left;
-    cout << "Date" << "\t" << "Amount" << "\t" << "Type" << "\t" << "Status" << "\t" << "Remarks" <<endl;
+    cout.fill(' ');
+    cout <<setw(24) << left << "Date" << "| " << internal << setw(15) << "Amount" << " | "<< setw(10) << "Type" << " | " 
+            << setw(10) << "Status" << " | "  << "Remarks" <<endl;
+    cout << string(88, '-') << "\n";
     for (const auto& prop : transactions)
     {
-        cout << put_time(localtime(&prop.date),"%F %T %Z") << "\t" << prop.amount << "\t" << prop.type 
-                << "\t" << prop.status << "\t" << prop.note <<endl;
+        cout.precision(2);
+        cout << put_time(localtime(&prop.date),"%F %T %Z") << " | "<< setw(15) << right << fixed << prop.amount << " | " 
+                 << setw(10) << typStr[prop.type] << " | " << setw(10) << staStr[prop.status] << " | " << prop.note <<endl;
+    }
+}
+
+void bank::CurrentAccount::withdraw(double amount)
+{
+    if (amount > balance){
+        cout << "Account gone into overdraft." <<endl;
+        transactions.push_front(Transaction(-charge, CHARGE, balance, "overdraft charges"));
+    }
+    Account::withdraw(amount);
+}
+
+int bank::SavingsAccount::count = 0;
+void bank::SavingsAccount::withdraw(double amount)
+{
+    if (amount > balance){
+        transactions.push_front(Transaction(-amount, DEBIT, balance, "Transaction denied", REJECTED));
+        cerr << "Insufficient funds." <<endl;
+    }
+    else{
+        Account::withdraw(amount);
+        count++;
+
+        if (count > 3)
+            cout << "Exceeded limit." <<endl;
+            transactions.push_front(Transaction(-charge, CHARGE, balance, "limit charges"));
     }
 }
 
