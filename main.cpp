@@ -4,23 +4,15 @@
 // #define getid(x) ((x).id)
 using namespace bank;
 
-struct s1{
-    int id;
-}a;
-
 int main(int, char**) {
 
-    Account acct("John", "Koln");
+    SavingsAccount acct("John", "Maddy", 200);
 
-    std::cout << acct.accountInfo() <<std::endl;
-
-    acct.deposit(3000);
-    //acct.withdraw(200);
-    //acct.withdraw(20.16);
-    //acct.deposit(450);
-    //acct.accountInfo();
-
+    acct.withdraw(250);
+    acct.deposit(1000);
     acct.transactionHistory();
+    acct.deposit(-1);
     
     std::cout << getBalance(acct);
+
 }
