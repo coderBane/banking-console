@@ -4,11 +4,12 @@ project(Banking-Console VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(nlohmann_json REQUIRED)
 
-set(SOURCES src/utilities.cpp bank/account.cpp bank/transaction.cpp)
+set(SOURCES src/utilities.cpp bank/account.cpp bank/transaction.cpp bank/customer.cpp)
 
 add_executable(Banking-Console main.cpp ${SOURCES})
 
