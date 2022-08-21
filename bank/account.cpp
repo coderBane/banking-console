@@ -80,4 +80,9 @@ void bank::SavingsAccount::withdraw(double amount)
     }
 }
 
+void bank::SavingsAccount::applyInterest()
+{ 
+    transactions.push_front(Transaction(balance * rate, INTEREST, balance)); 
+}
+
 double bank::getBalance(bank::Account account) { return account.balance; }

@@ -81,6 +81,21 @@ namespace bank{
             void withdraw(double amount);
             void applyInterest();
     };
+
+
+    class Customer
+    {
+        private:
+            std::string fname, sname, dob, address;
+            unsigned long id;
+            time_t joined;
+        protected:
+            std::list<Account> accounts;
+        public:
+            void initialize();
+            void createAccount();
+            void customerInfo() const;
+    };
     
 
     double getBalance(Account account);
