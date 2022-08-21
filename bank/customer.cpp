@@ -18,6 +18,7 @@ void bank::Customer::initialize()
     cout << "Please your Address: ";
     cin >> address;
     cout << "\n";
+
     createAccount();
 
     id = rd();
@@ -28,19 +29,21 @@ void bank::Customer::initialize()
 
 void bank::Customer::createAccount()
 {
-    cout << "Choose accounts to create:" <<endl;
-    cout << "C for current account\nS for Savings account" <<endl;
-    switch (cin.get())
-    {
-    case 0x73:
-        accounts.push_back(CurrentAccount(fname, sname, 0.0));
-        break;
-    case 0x63:
-        accounts.push_back(SavingsAccount(fname, sname, 0.0));
-        break;
-    default:
-        break;
+    cout << "Choose account(s) to create:" <<endl;
+    cout << "C for current account\nS for Savings account\nAny other key for default" <<endl;
+    unsigned char opt;
+    cin >> opt;
+    if (accounts.size() < 2){
+        if (opt == 0x73)
+            accounts.push_back(CurrentAccount(fname, sname, 0.0));
+        else if (opt == 0x63)
+            accounts.push_back(SavingsAccount(fname, sname, 0.0));
+        else{
+            accounts.push_back(CurrentAccount(fname, sname, 0.0));
+        }
     }
+    else
+        cout << "Cannot create anymore accounts. Sorry!" <<endl;
 }
 
 void bank::Customer::customerInfo() const
