@@ -95,9 +95,10 @@ namespace bank{
             void initialize();
             void createAccount();
             void customerInfo() const;
+            std::list<Account> getAccounts();
     };
     
-
+    
     double getBalance(Account account);
 }
 
