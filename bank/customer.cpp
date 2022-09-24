@@ -65,3 +65,5 @@ void bank::Customer::customerInfo() const
     clcsc;
     cout << info.dump(5);
 }
+
+std::list<bank::Account> bank::Customer::getAccounts() { return accounts; }
