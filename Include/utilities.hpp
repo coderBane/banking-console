@@ -10,8 +10,8 @@
  */
 #define clcsc printf("\e[1;1H\e[2J")
 
-#define enroll(x) (x->initialize())
-
 int generateNo(int, int);
+
+void options();
 
 #endif
