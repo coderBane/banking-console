@@ -3,9 +3,18 @@
 
 #include <list>
 #include <string>
+#include <random>
 #include <iomanip>
-#include "utilities.hpp"
 #include "nlohmann/json.hpp"
+
+static std::random_device rd;
+
+constexpr auto generateNo = [](size_t start, size_t limit)
+{
+    std::mt19937_64 gen(rd());
+    std::uniform_int_distribution<std::mt19937_64::result_type> uid(start, limit);
+    return uid(gen);
+};
 
 
 namespace bank{
@@ -14,14 +23,16 @@ namespace bank{
 
     enum TransactionStatus { PENDING, COMPLETED, REJECTED };
 
-    const char* const typStr[] = {
+    // Transaction type translations
+    const char* const typeTrans[] = {
         [DEBIT] = "DEBIT",
         [CREDIT] = "CREDIT",
         [INTEREST] = "INTEREST",
         [CHARGE] = "CHARGE",
     };
 
-    const char* const staStr[] = {
+    // Transaction status translations
+    const char* const statusTrans[] = {
         [PENDING] = "PENDING",
         [COMPLETED] = "COMPLETED",
         [REJECTED] = "REJECTED",
@@ -35,7 +46,8 @@ namespace bank{
         TransactionType type;
         TransactionStatus status;
 
-        Transaction(double, TransactionType, double&, std::string note = "", TransactionStatus = COMPLETED);
+        Transaction(double amount, TransactionType type, double& accountBalance, std::string note = "", TransactionStatus status = COMPLETED);
+        ~Transaction();
     };
 
 
@@ -51,12 +63,14 @@ namespace bank{
             std::list<Transaction> transactions;
         public:
             std::string fullname;
-            friend double getBalance(Account);
-            Account(std::string, std::string, double balance = 0.0);
+            friend double getBalance(Account account);
+            Account(std::string fname, std::string sname, double balance = 0.0);
             void deposit(double amount);
             virtual void withdraw(double amount);
             void transactionHistory() const;
-            std::string accountInfo() const;
+            const std::string accountInfo() const;
+
+            ~Account();
     };
 
 
@@ -64,9 +78,10 @@ namespace bank{
     {
         private:
             const double charge = 10.0;
+            const double overdraft_max = 100.0;
         public:
             CurrentAccount(std::string fname, std::string sname, double balance) : Account(fname, sname, balance){};
-            void withdraw(double amount);
+            void withdraw(double amount) override;
     };
 
 
@@ -78,7 +93,7 @@ namespace bank{
             static int count;
         public:
             SavingsAccount(std::string fname, std::string sname, double balance) : Account(fname, sname, balance){};
-            void withdraw(double amount);
+            void withdraw(double amount) override;;
             void applyInterest();
     };
 
@@ -86,16 +101,14 @@ namespace bank{
     class Customer
     {
         private:
-            std::string fname, sname, dob, address;
-            unsigned long id;
+            std::string fname, sname, dob;
+            size_t userId;
             time_t joined;
-        protected:
-            std::list<Account> accounts;
         public:
-            void initialize();
+            std::list<Account> accounts;
             void createAccount();
             void customerInfo() const;
-            std::list<Account> getAccounts();
+            void initialize(std::string firstname, std::string surname, std::string dob);
     };
     
     

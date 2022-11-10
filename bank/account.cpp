@@ -2,7 +2,6 @@
 #include <iostream>
 #include <exception>
 
-
 using namespace std;
 using json = nlohmann::json;
 
@@ -16,6 +15,8 @@ bank::Account::Account(string fname, string sname, double balance)
     created = time(nullptr);
 }
 
+bank::Account::~Account(){}
+
 void bank::Account::deposit(double amount)
 {
     (amount <= 0) ? throw range_error("Deposit amount must be greater than zero!") :
@@ -27,7 +28,7 @@ void bank::Account::withdraw(double amount)
     transactions.push_front(Transaction(-amount, DEBIT,  balance));
 }
 
-string bank::Account::accountInfo() const
+const string bank::Account::accountInfo() const
 {
     json info ={
         {"Account Holder", fullname},
@@ -50,20 +51,23 @@ void bank::Account::transactionHistory() const
     {
         cout.precision(2);
         cout << put_time(localtime(&prop.date),"%F %T %Z") << " | "<< setw(15) << right << fixed << prop.amount << " | " 
-                 << setw(10) << typStr[prop.type] << " | " << setw(10) << staStr[prop.status] << " | " << prop.note <<endl;
+                 << setw(10) << typeTrans[prop.type] << " | " << setw(10) << statusTrans[prop.status] << " | " << prop.note <<endl;
     }
 }
 
 void bank::CurrentAccount::withdraw(double amount)
 {
     if (amount > balance){
+        if (balance - amount <= overdraft_max)
+            throw std::invalid_argument("Amount exceeds overdraft limit!");
         cout << "Account gone into overdraft." <<endl;
-        transactions.push_front(Transaction(-charge, CHARGE, balance, "overdraft charges"));
+        transactions.push_front(Transaction(-charge, CHARGE, balance, "Overdraft charges"));
     }
     Account::withdraw(amount);
 }
 
 int bank::SavingsAccount::count = 0;
+
 void bank::SavingsAccount::withdraw(double amount)
 {
     if (amount > balance){
@@ -76,7 +80,7 @@ void bank::SavingsAccount::withdraw(double amount)
 
         if (count > 3)
             cout << "Exceeded limit." <<endl;
-            transactions.push_front(Transaction(-charge, CHARGE, balance, "limit charges"));
+            transactions.push_front(Transaction(-charge, CHARGE, balance, "Limit charges"));
     }
 }
 
