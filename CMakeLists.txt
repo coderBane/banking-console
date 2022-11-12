@@ -9,12 +9,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(nlohmann_json REQUIRED)
 
-set(SOURCES src/utilities.cpp bank/account.cpp bank/transaction.cpp bank/customer.cpp)
+set(SOURCES bank/account.cpp bank/transaction.cpp bank/customer.cpp bank/utils.cpp)
 
 add_executable(Banking-Console main.cpp ${SOURCES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include
-                                           PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bank)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/bank)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
